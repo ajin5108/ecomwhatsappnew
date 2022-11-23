@@ -4,12 +4,27 @@ from .forms import LoginRegister, UserRegistration
 from django.views.decorators.csrf import csrf_exempt, csrf_protect
 from django.contrib.auth import authenticate, login
 from django.contrib import messages
-from . models import MainBanner, SubBanners, Product, SubCategory, Category, Wishlist, Cart, Customer, AddToCart
-from django.http.response import JsonResponse
+from . models import MainBanner, Product, SubCategory, Category, SubBanners1, SubBanners2
+from . models import Wishlist, Cart, Customer, AddToCart, ChangePassword
 from django.contrib.auth.decorators import login_required
+from .helper import send_forget_password_mail
+import uuid
+from django.contrib.auth import logout
+from django.db.models import Q,Sum
+from django.http import JsonResponse
 
+# from django.http.response import JsonResponse
 
 # Create your views here.
+
+
+
+
+def logout_view(request):
+    logout(request)
+    return redirect('user:login')
+
+
 @csrf_exempt
 def login_views(request):
     if request.method == 'POST':
@@ -30,39 +45,96 @@ def login_views(request):
 def user_register(request):
     login_form = LoginRegister()
     user_form = UserRegistration()
-    print("hi")
+  
     if request.method == "POST":
         login_form = LoginRegister(request.POST)
-        print(login_form)
+        
         user_form = UserRegistration(request.POST)
-        print(user_form)
-        print("hlo")
+        
         if login_form.is_valid() and user_form.is_valid():
-            print("valid")
+            
             user = login_form.save(commit=False)
             user.is_customer = True
             user.save()
-            print("hloo")
+           
             c = user_form.save(commit=False)
             c.user = user
             c.save()
-            print("hloo")
-            messages.info(request, 'User Registration Successfully')
+            
+            messages.info(request, 'User Registration Successfull')
             return redirect('user:login')
     return render(request, 'web/sign-up.html', {'login_form': login_form, 'user_form': user_form})
+
+
+def forget_password(request):
+    if request.method == 'POST':
+        email = request.POST.get('email')
+        user_obj = Customer.objects.get(email=email)
+        
+        token = str(uuid.uuid4())
+        ChangePassword.objects.create(user=user_obj,forgot_password_token=token)
+        send_forget_password_mail(user_obj.email,token)
+        
+        messages.warning(request, "An email is sent")
+        return redirect("user:forgot password")
+    context = {}
+    return render(request, "web/forgot.html", context)
+
+
+def change_password(request,token):
+    
+    change_password_obj = ChangePassword.objects.get(forgot_password_token=token)
+    
+    if change_password_obj.status == True:
+        messages.error(request, "Link expired...")
+        return redirect('web:forget password')
+    
+    if change_password_obj.user:
+        
+        customer = Customer.objects.all()
+        for customer in customer:
+            if change_password_obj.user == customer:
+                if change_password_obj.user.email == customer.email:
+                    
+                    user_id=Customer.objects.filter(email=change_password_obj.user.email).first()
+
+                    if request.method == 'POST':
+                        new_password=request.POST.get('new_password')
+                        confirm_password=request.POST.get('confirm_password')
+                        user_id = request.POST.get('user_id')
+                    
+                        if user_id is None:
+                            messages.error(request, "User not found...")
+                            return redirect(f'/change password/{token}/')
+
+                        if new_password != confirm_password:
+                            messages.error(request, "Your Password and confirm Password dosen't match")
+                            return redirect(f'/change password/{token}/')
+
+                            
+                        user_obj = Customer.objects.get(email=change_password_obj.user.email)
+                        user_obj.set_password(new_password)
+                        user_obj.save()
+                        ChangePassword.objects.filter(forgot_password_token=token).update(status=True)
+                        messages.success(request, "Your password is updated")
+                        return redirect("/")
+                context = {'manager_id':change_password_obj.user.id}
+                return render(request,'web/change-password.html',context)
 
 
 
 def index(request):
     mainbanner = MainBanner.objects.last()
-    subbanners = SubBanners.objects.last()
+    subbanners1 = SubBanners1.objects.last()
+    subbanners2 = SubBanners2.objects.last()
     topsave = Product.objects.filter(is_top_save_today = True)
     bestseller = Product.objects.filter(is_best_seller = True).count()
     bestseller1 = Product.objects.filter(is_best_seller = True)[::-1]
     bestseller2 = Product.objects.filter(is_best_seller = True)[::-1]
     context = {
         "mainbanner":mainbanner,
-        "subbanner":subbanners,
+        "subbanner1":subbanners1,
+        "subbanner2":subbanners2,
         "topsave":topsave,
         "bestseller1":bestseller1,
         "bestseller2":bestseller2
@@ -84,141 +156,214 @@ def product(request, id):
 
 def shop(request,id):
     category = Category.objects.get(id=id)
-    subcategory = SubCategory.objects.filter(id=id)
+    
     context = {
         "category":category,
-        "subcategory":subcategory
+        # "subcategory":subcategory
     }
     return render(request, "web/shop-left-sidebar.html", context)
 
 # @csrf_protect
-@login_required(login_url='login')
+# @login_required(login_url='login')
+
 def addtowishlist(request,id):
-        print("product0")
+        
         if request.user.is_authenticated:
-            print("product1")
-            product = Product.objects.get(id=id)
-            print("product3")
-            if(product):
-                print("product4")
-                if(Wishlist.objects.filter(user=request.user.id,product=product)):
-                     return JsonResponse({'status':"product is already in wishlist"})
+            if Customer.objects.get(user = request.user):
+                print(request.user)
+                product = Product.objects.get(id=id)  
+                if product:
+                    cust = Customer.objects.get(user=request.user)
+                    if Wishlist.objects.filter(user=cust,product=product):
+                    
+                        messages.warning(request, "product is already in wishlist...")
+                        return redirect('/') 
+                    else:
+                        user = Customer.objects.get(user=request.user)
+                        Wishlist.objects.create(user=user,product=product)
+                        messages.warning(request, "Product added successfully...")   
+                        return redirect('/') 
+                    # return JsonResponse({'status':"Product added successfully"}) 
                 else:
-                    my_p = Customer.objects.get(user=request.user)
-                    print(my_p)
-                    Wishlist.objects.create(user=my_p,product=product)
-                   
-                return JsonResponse({'status':"Product added successfully"}) 
+                
+                    messages.error(request, "No such product found...") 
+                
             else:
-                return JsonResponse({'status':"No such product found"})
-        else:
-            return JsonResponse({'status':"Login to Continue"})
-        return redirect('/')
+            
+                messages.error(request, "Login to continue")
+                return redirect('user:login')
+            
+            
 
 
 def viewwishlist(request):
     if request.user.is_authenticated:
-        print("view0")
-        my_p = Customer.objects.get(user=request.user)
-        wished_item = Wishlist.objects.filter(user=my_p)
-        print(wished_item)
-        context= {
+        if Customer.objects.get(user = request.user):
+     
+            my_p = Customer.objects.get(user=request.user)
+            wished_item = Wishlist.objects.filter(user=my_p)
+        
+            context= {
             'wished_items':wished_item
-        }
-        return render(request,'web/wishlist.html',context)  
-
-
-@login_required(login_url='login')
-def addtocart(request,id):
-        if request.user.is_authenticated:
-            print("product1")
-            product = Product.objects.get(id=id)
-            print("product3")
-            if(product):
-                print("product4")
-                if(AddToCart.objects.filter(user=request.user.id,product=product)):
-                    
-                     return JsonResponse({'status':"product is already in cart"})
-                else:  
-                        my_p = Customer.objects.get(user=request.user)
-                        print(my_p)
-                        AddToCart.objects.create(user=my_p,product=product)
-                        
-                return JsonResponse({'status':"Product added successfully"}) 
-            else:
-                return JsonResponse({'status':"No such product found"})
+            }
+            return render(request,'web/wishlist.html',context)  
         else:
-            return JsonResponse({'status':"Login to Continue"})
-        return redirect('/')
+            messages.error(request,"pls login to continue")
+            return redirect('user:login')
+    else:
+            messages.error(request,"pls login to continue")
+            return redirect('user:login')
+
+
+def deletefromwishlist(request,id):
+        
+                   
+                    user = Customer.objects.get(user=request.user)                              
+                    product = Wishlist.objects.get(user=user,id=id)   
+                    
+                   
+                    product.delete()
+                    messages.warning(request, "Product removed successfully...") 
+                    return redirect('/')   
+                    
+                    # return JsonResponse({'status':"Product added successfully"}) 
+           
+        
+
+def addtocart(request,id):
+    if request.user.is_authenticated:
+        if Customer.objects.get(user = request.user):
+            product = Product.objects.get(id=id)
+            price = product.price
+        
+            if product:
+            
+                my_p = Customer.objects.get(user=request.user)
+                if AddToCart.objects.filter(user=my_p,product=product):
+            
+                    messages.warning(request,"product is already in cart")
+                    return redirect('/') 
+                else:  
+                    my_p = Customer.objects.get(user=request.user)
+                    AddToCart.objects.create(user=my_p,product=product,total=price) 
+                    messages.warning(request,"Product added successfully")    
+                    return redirect('/') 
+            else:
+                messages.error(request,"product is not available")
+                return redirect('/') 
+            
+        else:
+            messages.warning(request,"Login to Continue")
+            return redirect('user:login')
+    else:
+            messages.warning(request,"Login to Continue")
+            return redirect('user:login')
+
+
+def addQuantity(request):
+  
+        
+        
+        quantity = request.GET['quantity']
+        print(quantity,"%"*20)
+        
+        my_p = Customer.objects.get(user=request.user)
+        
+        id = request.GET['id']
+        print(id)
+        cart_obj = AddToCart.objects.get(id=id,user=my_p)
+        
+        print("########")
+        
+        new_quantity = int(quantity) +1 
+        product_total = float(new_quantity) * float(cart_obj.product.offer_price)
+        print(cart_obj.product.offer_price)
+        
+        print("*****")
+        
+        cart_obj.total = product_total
+        print(cart_obj.total)
+        
+        
+        cart_obj.save()
+        AddToCart.objects.filter(id=id).update(quantity=new_quantity, total=product_total)
+        print("success")
+        data = {
+            'total':cart_obj.total,
+        }
+        return JsonResponse(data)
+
+def lessQuantity(request):
+    quantity = request.GET['quantity']
     
+    my_p = Customer.objects.get(user=request.user)
     
+    id = request.GET['id']
+    cart_obj = AddToCart.objects.get(id=id,user=my_p)
+    new_quantity = int(quantity) - 1
+    product_total = float(new_quantity) * float(cart_obj.product.offer_price)
+    cart_obj.total = product_total
+    cart_obj.save()
+    AddToCart.objects.filter(id=id).update(quantity=new_quantity, total=product_total)
+    data = {
+        'total':cart_obj.total,
+
+    }
+    return JsonResponse(data) 
+    
+   
 def viewcart(request):
     if request.user.is_authenticated:
-        print("view0")
-        my_p = Customer.objects.get(user=request.user)
-        carted_item = Cart.objects.filter(user=my_p)
-        print(carted_item)
-        context= {
-            'carted_item':carted_item
-        }
-        return render(request,'web/cart.html',context)    
+        if request.user:
+            
+            my_p = Customer.objects.get(user=request.user)
+            sub_total = AddToCart.objects.filter(user__user=(request.user)).aggregate(Sum('total'))
+            carted_item = AddToCart.objects.filter(user=my_p)
+            
+            context= {
+                'carted_item':carted_item,
+                'sub_total' : sub_total
+            }
+            return render(request,'web/cart.html',context)  
+        else:
+            messages.warning(request,"Login to Continue")
+            return redirect('user:login')
+    else:
+            messages.warning(request,"Login to Continue")
+            return redirect('user:login')  
 
-    
-# def viewcart(request):
-#     print("cart0")
-#     if request.user == None:
-#         return redirect('user:login')
-#         print("cart1")
-#     else:
-#         carted_item = Product.objects.get(id=id)
-#         print("cart2")
-#         Cart.save(carted_item)
-#         print("cart3")
-#     context = {
-#         "carted_item" :carted_item
-#     }
-#     return render(request, "web/cart.html", context)    
-    
-    # if request.method == 'POST':
-    #     print("cart0")
-    #     if request.user.is_authenticated:
-    #         p_id=int(request.POST.get('id'))
-    #         product=Product.objects.get(product_id=p_id)
-    #         if(product):
-    #             if(Cart.objects.filter(user=request.user.id,product_id=p_id)):
-    #                 return JsonResponse({'status':"product is already in cart"})
-    #             else:
-    #                 p_qty=int(request.POST.get('prod_quantity'))
-    #                 if product.quantity >=p_qty:
-    #                     Cart.objects.create(customer=request.user,product_id=p_id,product_qty=p_qty)
-    #                     return JsonResponse({'status':"Product added successfully"})
-    #                 else:
-    #                     return JsonResponse({'status':"only "+str(product.quantity) + "quantity available"})
-    #         else:
-    #             return JsonResponse({'status':"No such product found"})
+
+
+def deletefromcart(request,id):                
+                  
+                    user = Customer.objects.get(user=request.user)                              
+                    product = AddToCart.objects.get(user=user,id=id)   
+                    product.delete()
+                    messages.warning(request, "Product removed successfully...") 
+                    return redirect('/')   
+                
+
+def checkout(request):
+    return render(request, "web/checkout.html")
+    # if request.user.is_authenticated:
+    #     if Customer.objects.get(user = request.user):
+            
+        
+    #         my_p = Customer.objects.get(user=request.user)
+    #         carted_item = AddToCart.objects.filter(user=my_p)
+       
+    #         context= {
+    #             'carted_item':carted_item
+    #         }
+    #         return render(request,'web/cart.html',context)  
     #     else:
-    #         return JsonResponse({'status':"Login to Continue"})
-    # return redirect('/')
-
-
-
-
-
-# def wishlist(request, id):
-#     if request.user == None:
-#         return redirect('user:login')
-#     else:
-#         request.user
-#         wished_item = Product.objects.get(user=request.user)
-#         Wishlist.save(wished_item)
-#     context = {
-#         "wished_item" :wished_item
-#     }
-#     return render(request, "web/wishlist.html", context)
-
-
-
-
+    #         messages.warning(request,"Login to Continue")
+    #         return redirect('user:login')
+    # else:
+    #         messages.warning(request,"Login to Continue")
+    #         return redirect('user:login') 
+    
+    
 
 
 def about_us(request):
@@ -243,9 +388,7 @@ def blog_list(request):
 
 
 
-def checkout(request):
-    context = {}
-    return render(request, "web/checkout.html", context)
+
 
 
 def coming_soon(request):
@@ -268,9 +411,9 @@ def faq(request):
     return render(request, "web/faq.html", context)
 
 
-def forgot(request):
-    context = {}
-    return render(request, "web/forgot.html", context)
+# def forgot(request):
+#     context = {}
+#     return render(request, "web/forgot.html", context)
 
 
 def index_2(request):
@@ -363,8 +506,32 @@ def product_sticky(request):
 
 
 def search(request):
-    context = {}
-    return render(request, "web/search.html", context)
+    # query = request.GET.get('search')
+    # print(search)
+    # allprod = []
+    # catsubcats = SubCategory.objects.values('subcategory',id)
+    # cats = {item['subcategory'] for item in catsubcats}
+    # for cat in cats:
+    #     prodtemp=Product.objects.filter(subcategory=cat)
+    kw=request.GET.get("search")
+    if kw:
+        if (Product.objects.filter(Q(product_icontains=kw) or Q(description_icontains=kw))):
+            results = Product.objects.filter(Q(product_icontains=kw) | Q(description_icontains=kw))
+            print(kw)
+            print(results)
+            context = {
+            "results" : results,
+            "status":1
+            }
+            return render(request, "web/search.html", context) 
+        else: 
+            messages.error(request, "No matching products found...") 
+            context = {
+            "status":0
+            }
+            return render(request, "web/search.html", context) 
+    else:
+        return render(request, "web/search.html")
 
 
 def seller_become(request):
@@ -407,8 +574,11 @@ def shop_category_slider(request):
     return render(request, "web/shop-category-slider.html", context)
 
 
-def shop_category(request):
-    context = {}
+def shop_category(request,id):
+    subcategory = SubCategory.objects.filter(id=id)
+    context = {
+        "subcategory":subcategory
+    }
     return render(request, "web/shop-category.html", context)
 
 

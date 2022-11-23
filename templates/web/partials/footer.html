@@ -60,7 +60,7 @@
                     <div class="footer-logo">
                         <div class="theme-logo">
                             <a href="/">
-                                <img src="{% static 'web/images/images/logo/1.png' %}"
+                                <img src="{% static 'web/images/logo/logo-01.png' %}"
                                     class="blur-up lazyload" alt="">
                             </a>
                         </div>
@@ -84,11 +84,11 @@
                 </div>
 
                 <div class="col-xl-2 col-lg-3 col-md-4 col-sm-6">
-                    {% comment %} <div class="footer-title">
+                 <!-- <div class="footer-title">
                         <h4>Categories</h4>
-                    </div> {% endcomment %}
+                    </div> 
 
-                    {% comment %} <div class="footer-contain">
+                     <div class="footer-contain">
                         <ul>
                             <li>
                                 <a href="" class="text-content">Vegetables & Fruit</a>
@@ -109,7 +109,7 @@
                                 <a href="" class="text-content">Grocery & Staples</a>
                             </li>
                         </ul>
-                    </div> {% endcomment %}
+                    </div>  -->
                 </div>
 
                 <div class="col-xl col-lg-2 col-sm-3">
@@ -123,7 +123,7 @@
                                 <a href="/" class="text-content">Home</a>
                             </li>
                             <li>
-                                <a href="{% url 'user:shop' 1 %}" class="text-content">Shop</a>
+                                
                                 <a href="{% url 'user:shop' 0 %}" class="text-content">Shop</a>
                             </li>
                             <li>
@@ -161,9 +161,9 @@
                             <li>
                                 <a href="{% url 'user:search' %}" class="text-content">Search</a>
                             </li>
-                            <li>
+                            <!-- <li>
                                 <a href="{% url 'user:faq' %}" class="text-content">FAQ</a>
-                            </li>
+                            </li> -->
                         </ul>
                     </div>
                 </div>
@@ -200,13 +200,13 @@
                                 <ul>
                                     <li class="mb-0">
                                         <a href="https://play.google.com/store/apps" target="_blank">
-                                            <img src="{% static 'web/images/images/playstore.svg' %}"
+                                            <img src="{% static 'web/images/playstore.svg' %}"
                                                 class="blur-up lazyload" alt="">
                                         </a>
                                     </li>
                                     <li class="mb-0">
                                         <a href="https://www.apple.com/in/app-store/" target="_blank">
-                                            <img src="{% static 'web/images/images/appstore.svg' %}"
+                                            <img src="{% static 'web/images/appstore.svg' %}"
                                                 class="blur-up lazyload" alt="">
                                         </a>
                                     </li>
@@ -224,7 +224,7 @@
             </div>
 
             <div class="payment">
-                <img src="{% static 'web/images/images/payment/1.png' %}"
+                <img src="{% static 'web/images/payment/1.png' %}"
                     class="blur-up lazyload" alt="">
             </div>
 
@@ -233,7 +233,8 @@
                 <ul>
                     <li>
                         <a href="https://www.facebook.com/" target="_blank">
-                            <i class="fa-brands fa-facebook-f"></i>
+                          <i class="fa-brands fa-facebook"></i>
+                            
                         </a>
                     </li>
                     <li>

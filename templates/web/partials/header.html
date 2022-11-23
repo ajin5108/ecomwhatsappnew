@@ -58,11 +58,12 @@
                                                         {% for subcategory in category.get_subcategories %}
 
                                                         <li>
-                                                            <a href="{{subcategory.get_shop_url}}">{{subcategory.subcategory }}</a>
+                                                            <a href="{% url 'user:shop_category' subcategory.id %}">{{subcategory.subcategory }}</a>
                                                         </li>
 
                                                         {% endfor %}    
                                                     </ul>
+                                                    
                                                 </div>
                                             </div>
                                         </li>
@@ -74,13 +75,17 @@
                             {% comment %} end  all categories {% endcomment %}
 
                             <div class="search-box">
+                                <form method="GET" action="{% url 'user:search' %}">
                                 <div class="input-group">
-                                    <input type="search" class="form-control" placeholder="I'm searching for..."
-                                        aria-label="Recipient's username" aria-describedby="button-addon2">
-                                    <button class="btn" type="button" id="button-addon2">
-                                        <i data-feather="search"></i>
-                                    </button>
+                                    
+                                        <input type="text" class="form-control" placeholder="I'm searching for..."
+                                        aria-label="Recipient's username" aria-describedby="button-addon2" name="search"required>
+                                        <button class="btn" type="submit" id="button-addon2">
+                                            <i data-feather="search"></i>
+                                        </button>
+                                    
                                 </div>
+                            </form>
                             </div>
                         </div>
 
@@ -132,71 +137,9 @@
 
 
 
-                                {% comment %} <li class="right-side">
-                                    <div class="onhover-dropdown header-badge">
-                                        <button type="button" class="btn p-0 position-relative header-wishlist">
-                                            <i data-feather="shopping-cart"></i>
-                                            <span class="position-absolute top-0 start-100 translate-middle badge">2
-                                                <span class="visually-hidden">unread messages</span>
-                                            </span>
-                                        </button>
-
-                                        <div class="onhover-div">
-                                            <ul class="cart-list">
-                                                <li class="product-box-contain">
-                                                    <div class="drop-cart">
-                                                        <a href="product-left-thumbnail.html" class="drop-image">
-                                                            <img src="{% static 'web/images/vegetable/product/1.png' %}"
-                                                                class="blur-up lazyload" alt="">
-                                                        </a>
-
-                                                        <div class="drop-contain">
-                                                            <a href="product-left-thumbnail.html">
-                                                                <h5>Fantasy Crunchy Choco Chip Cookies</h5>
-                                                            </a>
-                                                            <h6><span>1 x</span> $80.58</h6>
-                                                            <button class="close-button close_button">
-                                                                <i class="fa-solid fa-xmark"></i>
-                                                            </button>
-                                                        </div>
-                                                    </div>
-                                                </li>
-
-                                                <li class="product-box-contain">
-                                                    <div class="drop-cart">
-                                                        <a href="product-left-thumbnail.html" class="drop-image">
-                                                            <img src="{% static 'web/images/vegetable/product/2.png' %}"
-                                                                class="blur-up lazyload" alt="">
-                                                        </a>
-
-                                                        <div class="drop-contain">
-                                                            <a href="product-left-thumbnail.html">
-                                                                <h5>Peanut Butter Bite Premium Butter Cookies 600 g
-                                                                </h5>
-                                                            </a>
-                                                            <h6><span>1 x</span> $25.68</h6>
-                                                            <button class="close-button close_button">
-                                                                <i class="fa-solid fa-xmark"></i>
-                                                            </button>
-                                                        </div>
-                                                    </div>
-                                                </li>
-                                            </ul>
-
-                                            <div class="price-box">
-                                                <h5>Total :</h5>
-                                                <h4 class="theme-color fw-bold">$106.58</h4>
-                                            </div>
-
-                                            <div class="button-group">
-                                                <a href="cart.html" class="btn btn-sm cart-button">View Cart</a>
-                                                <a href="checkout.html" class="btn btn-sm cart-button theme-bg-color
-                                                text-white">Checkout</a>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </li> {% endcomment %}
+                               
                                 <li class="right-side onhover-dropdown">
+                                    
                                     <div class="delivery-login-box">
                                         <div class="delivery-icon">
                                             <i data-feather="user"></i>
@@ -206,19 +149,29 @@
                                             <h5>My Account</h5>
                                         </div>
                                     </div>
-
+                                   
                                     <div class="onhover-div onhover-div-login">
-                                        <ul class="user-box-name">
+                                         <ul class="user-box-name">
+                                           
+                                            {% if status == 0 %}
                                             <li class="product-box-contain">
                                                 <i></i>
-                                                <a href="login">Log In</a>
+                                                <a href={% url 'user:login' %}>Log In</a>
                                             </li>
-
                                             <li class="product-box-contain">
-                                                <a href="sign-up">Register</a>
+                                                <a href={% url 'user:sign_up' %}>Register</a>
                                             </li>
-                                        </ul>
+                                            {% else %}
+                                            <li class="product-box-contain">
+                                                <a href={% url 'user:sign_up' %}>New Account</a>
+                                            </li>
+                                            <li class="product-box-contain">
+                                                <a href={% url 'user:logout' %}>Logout</a>
+                                            </li>
+                                            {% endif %}
+                                        </ul> 
                                     </div>
+                                   
                                 </li>
                             </ul>
                         </div>
@@ -253,7 +206,7 @@
                                     <div class="onhover-category-box">
                                         {% for subcategory in category.get_subcategories %}
                                             <div class="category-title-box">
-                                                <a href="{% url 'user:shop' subcategory.id %}"><h5>{{subcategory.subcategory}}</h5></a>
+                                                <a href="{% url 'user:shop_category' subcategory.id %}"><h5>{{subcategory.subcategory}}</h5></a>
                                             </div>
                                             <ul>
                                                 {% for products in subcategory.get_products %}

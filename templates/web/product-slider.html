@@ -29,7 +29,7 @@
             </li>
 
             <li>
-                <a href="{% url 'user:viewwishlist' %}" class="notifi-wishlist">
+                <a href="{% url 'user:viewwishlist' %}" >
                     <i class="iconly-Heart icli"></i>
                     <span>My Wish</span>
                 </a>
@@ -101,6 +101,13 @@
             <div class="row">
                 <div class="col-xxl-12 col-xl-12 col-lg-12 wow fadeInUp">
                     <div class="row g-4">
+                        {% if messages %}
+                            {% for message in messages %}
+                            <div class="alert alert-info">
+                                {{message}}
+                            </div>
+                            {% endfor %}
+                            {% endif %}
                         <div class="col-12 wow fadeInUp">
                             <div class="right-box-contain">
                                 <h6 class="offer-top">30% Off</h6>
@@ -356,7 +363,7 @@
                                                 </div>
                                             </div>
 
-                                            <!-- <div class="nav-desh">
+                                            <div class="nav-desh">
                                                 <div class="desh-title">
                                                     <h5>From The Manufacturer:</h5>
                                                 </div>
@@ -377,7 +384,7 @@
                                                     chocolate. Ice cream cookie dragée cake sweet roll sweet roll.Lemon
                                                     drops cookie muffin carrot cake chocolate marzipan gingerbread
                                                     topping chocolate bar. Soufflé tiramisu pastry sweet dessert.</p>
-                                            </div> -->
+                                            </div>
                                         </div>
                                     </div>
 
@@ -814,7 +821,7 @@
                                             </li>
 
                                             <li data-bs-toggle="tooltip" data-bs-placement="top" title="Wishlist">
-                                                <a href="wishlist.html" class="notifi-wishlist">
+                                                <a href="wishlist.html">
                                                     <i data-feather="heart"></i>
                                                 </a>
                                             </li>
@@ -852,11 +859,16 @@
                                         <h5 class="price"><span class="theme-color">Rs {{related.price}}</span> <del>Rs {{related.offer_price}}</del>
                                         </h5>
                                         <div class="add-to-cart-box bg-white">
+                                            {% if related.quantity > 0%}
                                             <button class="btn btn-add-cart addcart-button">Add
                                                 <span class="add-icon bg-light-gray">
                                                     <i class="fa-solid fa-plus"></i>
                                                 </span>
                                             </button>
+                                            {% else%}
+                                            <span class=" bg-light-gray">
+                                                Out Of Stock
+                                            </span>
                                             {% comment %} <div class="cart_qty qty-box">
                                                 <div class="input-group bg-white">
                                                     <button type="button" class="qty-left-minus bg-gray"
@@ -871,6 +883,7 @@
                                                     </button>
                                                 </div>
                                             </div> {% endcomment %}
+                                            {% endif %}
                                         </div>
                                     </div>
                                 </div>
@@ -975,19 +988,6 @@
                         <div class="selection-section">
                             <div class="form-group mb-0">
                                 <select id="input-state" class="form-control form-select">
-                                    <option selected disabled>Choose Weight...</option>
-                                    <option>1/2 KG</option>
-                                    <option>1 KG</option>
-                                    <option>1.5 KG</option>
-                                </select>
-                            </div>
-                            <div class="cart_qty qty-box product-qty m-0">
-                                <div class="input-group h-100">
-                                    <button type="button" class="qty-left-minus" data-type="minus" data-field="">
-                                        <i class="fa fa-minus" aria-hidden="true"></i>
-                                    </button>
-                                    <input class="form-control input-number qty-input" type="text" name="quantity"
-                                        value="1">
                                     <button type="button" class="qty-right-plus" data-type="plus" data-field="">
                                         <i class="fa fa-plus" aria-hidden="true"></i>
                                     </button>

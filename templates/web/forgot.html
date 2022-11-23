@@ -88,18 +88,19 @@
                             </div>
 
                             <div class="input-box">
-                                <form class="row g-4">
+                                <form class="row g-4" action="" method="POST">
+                                    {% csrf_token %}
                                     <div class="col-12">
                                         <div class="form-floating theme-form-floating log-in-form">
-                                            <input type="email" class="form-control" id="email"
-                                                placeholder="Email Address">
+                                            <input type="email" class="form-control"  id="email"
+                                                placeholder="Email Address" name="email">
                                             <label for="email">Email Address</label>
                                         </div>
                                     </div>
 
-                                    <div class="col-12">
-                                        <button class="btn btn-animation w-100" type="submit">Forgot
-                                            Password</button>
+                                    <div class="col-12">    
+                                        <button class="btn btn-animation w-100" type="submit">Submit
+                                            </button> 
                                     </div>
                                 </form>
                             </div>
@@ -137,9 +138,7 @@
                         </li>
 
                         <li>
-                            <div class="setting-name">
-                                <h4>Dark</h4>
-                            </div>
+                          
                             <div class="theme-setting-button">
                                 <button class="btn btn-2 outline" id="darkButton">Dark</button>
                                 <button class="btn btn-2 unline" id="lightButton">Light</button>

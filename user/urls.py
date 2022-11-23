@@ -15,7 +15,10 @@ urlpatterns = [
     path("compare", views.compare, name="compare"),
     path("contact-us", views.contact_us, name="contact_us"),
     path("faq", views.faq, name="faq"),
-    path("forgot", views.forgot, name="forgot"),
+    path("forgot", views.forget_password, name="forgot password"),
+    path('change password/<token>/', views.change_password, name="change password"),
+    path("delete/<int:id>", views.deletefromwishlist, name="deletefromwishlist"),
+    path("deletecart/<int:id>", views.deletefromcart, name="deletefromcart"),
     path("index-2", views.index_2, name="index_2"),
     path("index-3", views.index_3, name="index_3"),
     path("index-4", views.index_4, name="index_4"),
@@ -26,6 +29,7 @@ urlpatterns = [
     path("index-9", views.index_9, name="index_9"),
     path("", views.index, name="index"),
     path("login", views.login_views, name="login"),
+    path("logout", views.logout_view, name="logout"),
     path("order-success", views.order_success, name="order_success"),
     path("order-tracking", views.order_tracking, name="order_tracking"),
     path("otp", views.otp, name="otp"),
@@ -45,7 +49,7 @@ urlpatterns = [
     path("seller-grid", views.seller_grid, name="seller_grid"),
     path("shop-banner", views.shop_banner, name="shop_banner"),
     path("shop-category-slider", views.shop_category_slider, name="shop_category_slider"),
-    path("shop-category", views.shop_category, name="shop_category"),
+    path("shop-category/<int:id>", views.shop_category, name="shop_category"),
     path("shop/<int:id>", views.shop, name="shop"),
     path("shop-list", views.shop_list, name="shop_list"),
     path("shop-right-sidebar", views.shop_right_sidebar, name="shop_right_sidebar"),
@@ -56,4 +60,7 @@ urlpatterns = [
     path("wishlist",views.viewwishlist,name="viewwishlist"),
     path("404", views.error_404, name="error_404"),
     
+    # cart add ajax
+    path("addquantity/",views.addQuantity, name="addquantity"),
+    path("lessquantity/",views.lessQuantity,name="lessquantity")
 ]

@@ -29,7 +29,7 @@
             </li>
 
             <li>
-                <a href="{% url 'user:viewwishlist' %}" class="notifi-wishlist">
+                <a href="{% url 'user:viewwishlist' %}">
                     <i class="iconly-Heart icli"></i>
                     <span>My Wish</span>
                 </a>
@@ -127,6 +127,13 @@
     <section class="section-b-space shop-section ">
         <div class="container-fluid-lg">
             <div class="row">
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="alert alert-info">
+                                {{message}}
+                            </div>
+                        {% endfor %}
+                    {% endif %}
                 <!-- <div class="col-custome-3">
                     <div class="left-box wow fadeInUp">
                         <div class="shop-left-sidebar d-none">
@@ -943,26 +950,13 @@
                                                 <li>
                                                     <i data-feather="star" class="fill"></i>
                                                 </li>
-                                                <li>
-                                                    <i data-feather="star" class="fill"></i>
-                                                </li>
-                                                <li>
-                                                    <i data-feather="star" class="fill"></i>
-                                                </li>
-                                                <li>
-                                                    <i data-feather="star" class="fill"></i>
-                                                </li>
-                                                <li>
-                                                    <i data-feather="star"></i>
-                                                </li>
-                                            </ul>
                                             <span>(4.0)</span>
                                         </div>
                                         <h6 class="unit">250 ml</h6>
                                         <h5 class="price"><span class="theme-color">{{product.price}}</span> <del>{{product.offer_price}}</del>
                                         </h5>
                                         <div class="add-to-cart-box bg-white">
-                                            <button class="btn btn-add-cart addcart-button">Add
+                                            <a href="{% url 'user:addtocart' product.id %}" <button class="btn btn-add-cart addcart-button">Add to cart
                                                 {% comment %} <span class="add-icon bg-light-gray">
                                                     <i class="fa-solid fa-plus"></i>
                                                 </span> {% endcomment %}
@@ -1006,7 +1000,7 @@
                                                 </a>
                                             </li>
                                             <li data-bs-toggle="tooltip" data-bs-placement="top" title="Wishlist">
-                                                <a href="{% url 'user:wishlist' product.id %}" class="notifi-wishlist">
+                                                <a href="{% url 'user:wishlist' product.id %}">
                                                     <i data-feather="heart"></i>
                                                 </a>
                                             </li>
@@ -1044,11 +1038,11 @@
                                         <h5 class="price"><span class="theme-color">{{product.price}}</span> <del>{{product.offer_price}}</del>
                                         </h5>
                                         <div class="add-to-cart-box bg-white">
-                                            <button class="btn btn-add-cart addcart-button">Add
+                                            <a href="{% url 'user:addtocart' products.id %}"><button class="btn btn-add-cart addcart-button">Add
                                                 {% comment %} <span class="add-icon bg-light-gray">
                                                     <i class="fa-solid fa-plus"></i>
                                                 </span> {% endcomment %}
-                                            </button>
+                                            </button></a>
                                             {% comment %} <div class="cart_qty qty-box">
                                                 <div class="input-group bg-white">
                                                     <button type="button" class="qty-left-minus bg-gray"

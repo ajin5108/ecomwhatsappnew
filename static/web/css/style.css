@@ -7348,6 +7348,7 @@ header .onhover-category-list .onhover-category-box {
         margin-top: 7px;
         opacity: 1;
         visibility: visible;
+        height: fit-content;
         margin-left: 0
     }
 }

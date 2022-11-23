@@ -29,7 +29,7 @@
             </li>
 
             <li>
-                <a href="{% url 'user:viewwishlist' %}" class="notifi-wishlist">
+                <a href="{% url 'user:viewwishlist' %}">
                     <i class="iconly-Heart icli"></i>
                     <span>My Wish</span>
                 </a>
@@ -52,21 +52,12 @@
                 <div class="col-xl-8 ratio_65">
                     <div class="home-contain h-100">
                         <div class="h-100">
-                            <img src="{{mainbanner.bannerbig.url}}"
+                            <a href="{% url 'user:product' mainbanner.product.id %}">
+                                <img src="{{mainbanner.bannerbig.url}}"
                                 class="bg-img blur-up lazyload" alt="Stay home & delivered your Daily Needs">
+                            </a>
                         </div>
-                        <!-- <div class="home-detail p-center-left w-75">
-                            <div>
-                                <h6>Exclusive offer <span>30% Off</span></h6>
-                                <h1 class="text-uppercase">Stay home & delivered your <span class="daily">Daily
-                                        Needs</span></h1>
-                                <p class="w-75 d-none d-sm-block">Vegetables contain many vitamins and minerals that are
-                                    good for your health.</p>
-                                <button onclick="location.href = 'shop-left-sidebar.html';"
-                                    class="btn btn-animation mt-xxl-4 mt-2 home-button mend-auto">Shop Now <i
-                                        class="fa-solid fa-right-long icon"></i></button>
-                            </div>
-                        </div> -->
+                        
                     </div>
                 </div>
 
@@ -75,34 +66,19 @@
                         
                         <div class="col-xl-12 col-md-6">
                             <div class="home-contain">
-                                <img src="{{subbanner.subbanner1.url}}"
+                                <a href="{% url 'user:product' subbanner1.product.id %}">
+                                    <img src="{{subbanner1.subbanner1.url}}"
                                     class="bg-img blur-up lazyload" alt="">
-                                <!-- <div class="home-detail p-center-left home-p-sm w-75">
-                                    <div>
-                                        <h2 class="mt-0 text-danger">45% <span class="discount text-title">OFF</span>
-                                        </h2>
-                                        <h3 class="theme-color">Nut Collection</h3>
-                                        <p class="w-75">We deliver organic vegetables & fruits</p>
-                                        <a href="shop-left-sidebar.html" class="shop-button">Shop Now <i
-                                                class="fa-solid fa-right-long"></i></a>
-                                    </div>
-                                </div> -->
+                                </a>
                             </div>
                         </div>
 
                         <div class="col-xl-12 col-md-6">
                             <div class="home-contain">
-                                <img src="{{subbanner.subbanner2.url}}"
+                                <a href="{% url 'user:product' subbanner2.product.id %}">
+                                    <img src="{{subbanner2.subbanner2.url}}"
                                     class="bg-img blur-up lazyload" alt="">
-                                <!-- <div class="home-detail p-center-left home-p-sm w-75">
-                                    <div>
-                                        <h3 class="mt-0 theme-color fw-bold">Healthy Food</h3>
-                                        <h4 class="text-danger">Organic Market</h4>
-                                        <p class="organic">Start your daily shopping with some Organic food</p>
-                                        <a href="shop-left-sidebar.html" class="shop-button">Shop Now <i
-                                                class="fa-solid fa-right-long"></i></a>
-                                    </div>
-                                </div> -->
+                                </a>
                             </div>
                         </div> 
                         
@@ -471,37 +447,38 @@
                             </span>
                             <p>Don't miss this opportunity at a special discount just for this week.</p>
                         </div>
+                       
                         <div class="timing-box">
                             <div class="timing">
                                 <i data-feather="clock"></i>
                                 <h6 class="name">Expires in :</h6>
-                                <div class="time" id="clockdiv-1" data-hours="1" data-minutes="2" data-seconds="3">
+                                <div class="time">
                                     <ul>
                                         <li>
                                             <div class="counter">
-                                                <div class="days">
-                                                    <h6>282</h6>
+                                                <div>
+                                                    <h6 id="days1"></h6>
                                                 </div>
                                             </div>
                                         </li>
                                         <li>
                                             <div class="counter">
-                                                <div class="hours">
-                                                    <h6>23</h6>
+                                                <div>
+                                                    <h6 id="hours1"></h6>
                                                 </div>
                                             </div>
                                         </li>
                                         <li>
                                             <div class="counter">
-                                                <div class="minutes">
-                                                    <h6>55</h6>
+                                                <div>
+                                                    <h6 id="minutes1"></h6>
                                                 </div>
                                             </div>
                                         </li>
                                         <li>
                                             <div class="counter">
-                                                <div class="seconds">
-                                                    <h6>40</h6>
+                                                <div>
+                                                    <h6 id="seconds1"></h6>
                                                 </div>
                                             </div>
                                         </li>
@@ -513,6 +490,13 @@
 
                     <div class="section-b-space">
                         <div class="row m-0">
+                            {% if messages %}
+                            {% for message in messages %}
+                            <div class="alert alert-info">
+                                {{message}}
+                            </div>
+                            {% endfor %}
+                            {% endif %}
                             {%for topsaves in topsave%}                          
                                 <div class="col-lg-4 col-6 px-0">                                       
                                     <div class="product-box" style="border-right:0px;">
@@ -531,7 +515,7 @@
                                                 </li>
                                                 <li data-bs-toggle="tooltip" data-bs-placement="top"
                                                             title="Wishlist">
-                                                    <a href="{% url 'user:addtowishlist' topsaves.id %}" class="notifi-wishlist">
+                                                    <a href="{% url 'user:addtowishlist' topsaves.id %}">
                                                         <i data-feather="heart"></i>
                                                     </a>
                                                     </li>
@@ -692,7 +676,7 @@
 
                                                     <li data-bs-toggle="tooltip" data-bs-placement="top"
                                                         title="Wishlist">
-                                                        <a href="wishlist.html" class="notifi-wishlist">
+                                                        <a href="wishlist.html">
                                                             <i data-feather="heart"></i>
                                                         </a>
                                                     </li>
@@ -783,7 +767,7 @@
 
                                                     <li data-bs-toggle="tooltip" data-bs-placement="top"
                                                         title="Wishlist">
-                                                        <a href="wishlist.html" class="notifi-wishlist">
+                                                        <a href="wishlist.html">
                                                             <i data-feather="heart"></i>
                                                         </a>
                                                     </li>
@@ -874,7 +858,7 @@
 
                                                     <li data-bs-toggle="tooltip" data-bs-placement="top"
                                                         title="Wishlist">
-                                                        <a href="wishlist.html" class="notifi-wishlist">
+                                                        <a href="wishlist.html" >
                                                             <i data-feather="heart"></i>
                                                         </a>
                                                     </li>
@@ -965,7 +949,7 @@
 
                                                     <li data-bs-toggle="tooltip" data-bs-placement="top"
                                                         title="Wishlist">
-                                                        <a href="wishlist.html" class="notifi-wishlist">
+                                                        <a href="wishlist.html">
                                                             <i data-feather="heart"></i>
                                                         </a>
                                                     </li>
@@ -1056,7 +1040,7 @@
 
                                                     <li data-bs-toggle="tooltip" data-bs-placement="top"
                                                         title="Wishlist">
-                                                        <a href="wishlist.html" class="notifi-wishlist">
+                                                        <a href="wishlist.html">
                                                             <i data-feather="heart"></i>
                                                         </a>
                                                     </li>
@@ -1067,30 +1051,7 @@
                                                     <h6 class="name h-100">Mix-sweet-food</h6>
                                                 </a>
 
-                                                <h5 class="sold text-content">
-                                                    <span class="theme-color price">$26.69</span>
                                                     <del>28.56</del>
-                                                </h5>
-
-                                                <div class="product-rating mt-sm-2 mt-1">
-                                                    <ul class="rating">
-                                                        <li>
-                                                            <i data-feather="star" class="fill"></i>
-                                                        </li>
-                                                        <li>
-                                                            <i data-feather="star" class="fill"></i>
-                                                        </li>
-                                                        <li>
-                                                            <i data-feather="star" class="fill"></i>
-                                                        </li>
-                                                        <li>
-                                                            <i data-feather="star" class="fill"></i>
-                                                        </li>
-                                                        <li>
-                                                            <i data-feather="star"></i>
-                                                        </li>
-                                                    </ul>
-
                                                     <h6 class="theme-color">In Stock</h6>
                                                 </div>
 
@@ -1147,7 +1108,7 @@
 
                                                     <li data-bs-toggle="tooltip" data-bs-placement="top"
                                                         title="Wishlist">
-                                                        <a href="wishlist.html" class="notifi-wishlist">
+                                                        <a href="wishlist.html">
                                                             <i data-feather="heart"></i>
                                                         </a>
                                                     </li>
@@ -1283,14 +1244,14 @@
                                 {% for item in bestseller1%}
                                 <li>
                                     <div class="offer-product">
-                                        <a href="product-left-thumbnail.html" class="offer-image">
+                                        <a href="{% url 'user:shop' item.id %}" class="offer-image">
                                             <img src="{{item.image.url}}"
                                                 class="blur-up lazyload" alt="">
                                         </a>
 
                                         <div class="offer-detail">
                                             <div>
-                                                <a href="product-left-thumbnail.html" class="text-title">
+                                                <a href="{% url 'user:shop' item.id %}" class="text-title">
                                                     <h6 class="name">{{item.product}}</h6>
                                                 </a>
                                                 {% comment %} <span>500 G</span> {% endcomment %}
@@ -1308,14 +1269,14 @@
                                 {% for item in bestseller2%}
                                 <li>
                                     <div class="offer-product">
-                                        <a href="product-left-thumbnail.html" class="offer-image">
+                                        <a href="{% url 'user:shop' item.id %}" class="offer-image">
                                             <img src="{{item.image.url}}"
                                                 class="blur-up lazyload" alt="">
                                         </a>
 
                                         <div class="offer-detail">
                                             <div>
-                                                <a href="product-left-thumbnail.html" class="text-title">
+                                                <a href="{% url 'user:shop' item.id %}" class="text-title">
                                                     <h6 class="name">{{item.product}}</h6>
                                                 </a>
                                                 {% comment %} <span>500 G</span> {% endcomment %}
@@ -1440,7 +1401,7 @@
                                 <div class="newsletter-detail">
                                     <h2>Join our newsletter and get...</h2>
                                     <h5>$20 discount for your first order</h5>
-                                    <div class="input-box">
+                                    <!-- <div class="input-box">
                                         <input type="email" class="form-control" id="exampleFormControlInput1"
                                             placeholder="Enter Your Email">
                                         <i class="fa-solid fa-envelope arrow"></i>
@@ -1448,7 +1409,7 @@
                                             <span class="d-sm-block d-none">Subscribe</span>
                                             <i class="fa-solid fa-arrow-right icon"></i>
                                         </button>
-                                    </div>
+                                    </div> -->
                                 </div>
                             </div>
                         </div>
